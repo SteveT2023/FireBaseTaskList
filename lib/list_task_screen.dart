@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'login_screen.dart';
 
 class TaskListScreen extends StatefulWidget {
   const TaskListScreen({super.key});
@@ -13,7 +15,11 @@ class _TaskListScreenState extends State<TaskListScreen> {
   final Set<String> checkBoxToggle = {};
 
   void addTask(String taskName) async {
-    await FirebaseFirestore.instance.collection('Tasks').add({'taskName': taskName});
+    final taskRef = await FirebaseFirestore.instance.collection('Tasks').add({'taskName': taskName});
+    await FirebaseFirestore.instance
+        .collection('Check_Box')
+        .doc(taskRef.id)
+        .set({'isChecked': false});
     itemController.clear();
   }
 
@@ -67,6 +73,22 @@ class _TaskListScreenState extends State<TaskListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: const Text('Task List'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              await FirebaseAuth.instance.signOut();
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const LoginScreen()),
+              );
+            },
+          ),
+        ],
+      ),
       body: Column(
         children: [
           Padding(
