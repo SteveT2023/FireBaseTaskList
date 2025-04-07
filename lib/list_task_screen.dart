@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class TaskListScreen extends StatefulWidget {
@@ -24,6 +23,10 @@ class _TaskListScreenState extends State<TaskListScreen> {
 
   void updateTask(String taskID, String taskName) async {
     await FirebaseFirestore.instance.collection('Tasks').doc(taskID).update({'taskName': taskName});
+  }
+
+  void checkBoxStatus(String taskID, bool isChecked) async {
+    await FirebaseFirestore.instance.collection('Check_Box').doc(taskID).set({'isChecked': isChecked});
   }
 
   void updateDialog(String taskID, String taskName) {
@@ -112,6 +115,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
                               checkBoxToggle.remove(id);
                             }
                           });
+                          checkBoxStatus(id, value ?? false);
                         },
                       ),
                       trailing: IconButton(
