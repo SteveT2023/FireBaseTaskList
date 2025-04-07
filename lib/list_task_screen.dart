@@ -11,6 +11,7 @@ class TaskListScreen extends StatefulWidget {
 
 class _TaskListScreenState extends State<TaskListScreen> {
   final TextEditingController itemController = TextEditingController();
+  final Set<String> checkBoxToggle = {};
 
   void addTask(String taskName) async {
     await FirebaseFirestore.instance.collection('Tasks').add({'taskName': taskName});
@@ -98,16 +99,26 @@ class _TaskListScreenState extends State<TaskListScreen> {
                     final task = tasks[index];
                     final id = task.id;
                     final name = task['taskName'];
+                    final isToggled = checkBoxToggle.contains(id);
                     return ListTile(
                       title: Text(name),
-                      leading: IconButton(
-                        icon: Icon(Icons.edit),
-                        onPressed: () => updateDialog(id, name),
+                      leading: Checkbox(
+                        value: isToggled,
+                        onChanged: (value) {
+                          setState(() {
+                            if (value == true) {
+                              checkBoxToggle.add(id);
+                            } else {
+                              checkBoxToggle.remove(id);
+                            }
+                          });
+                        },
                       ),
                       trailing: IconButton(
                         icon: Icon(Icons.delete),
                         onPressed: () => deleteTask(id),
                       ),
+                      onTap: () => updateDialog(id, name),
                     );
                   },
                 );
