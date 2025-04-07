@@ -19,6 +19,7 @@ class _TaskListScreenState extends State<TaskListScreen> {
 
   void deleteTask(String taskID) async {
     await FirebaseFirestore.instance.collection('Tasks').doc(taskID).delete();
+    await FirebaseFirestore.instance.collection('Check_Box').doc(taskID).delete();
   }
 
   void updateTask(String taskID, String taskName) async {
